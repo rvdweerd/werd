@@ -2,6 +2,33 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+#include <vector>
+#include <random>
+
+class Words {
+public:
+	Words()
+		:
+		rng( std::random_device()())
+	{
+		std::ifstream in("5Lwords.txt");
+		while (in.good())
+		{
+			std::string str;
+			getline(in,str);
+			fiveLetterWords.emplace_back(str);
+		}
+	}
+	std::string GetRandom5LWord()
+	{
+		std::uniform_int_distribution<int> nDistr(0, fiveLetterWords.size() - 1);
+		return fiveLetterWords[nDistr(rng)];
+	}
+
+private:
+	std::vector <std::string> fiveLetterWords;
+	std::mt19937 rng;
+};
 
 void WaitForKeyPressed()
 {
@@ -12,13 +39,18 @@ void WaitForKeyPressed()
 
 void GetWordFromUser(std::string& wordInput)
 {
+	//IMPLEMENT TESTS:
+	// 1. word exists
+	// 2. word has exactly 5 letters
+
 	std::cout << "Guess a five letter word: ";
 	std::cin >> wordInput;
 }
 
-void GetTargetWord(std::string& wordSelected)
+void GetTargetWord(std::string& wordSelected, Words& words)
 {
-	wordSelected = "elder";
+	//IMPLEMENT RANDOM WORD SELECTOR
+	wordSelected = words.GetRandom5LWord();
 }
 
 int CalculateScore(std::string guess, std::string target)
@@ -57,11 +89,13 @@ int CalculateScore(std::string guess, std::string target)
 
 int main()
 {
+	Words words;
 	std::string guess;
 	std::string target;
 	int attempts = 1;
 
-	GetTargetWord(target);
+	GetTargetWord(target, words);
+	std::cout << "\nTarget word: " << target<<std::endl;
 	bool win = false;
 
 
